@@ -2,4 +2,7 @@
 
 ![publish temp με leds ](https://github.com/user-attachments/assets/43060f08-caab-4818-852a-76481909f255)
 
-tkdgkfkhfghfhffgjjghj
+# Procedure for temperature and humidity measurements 
+-εφγφδ
+-γδγδγγ
+-δφγφδγγφ
