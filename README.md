@@ -1,5 +1,4 @@
 # Temperature-Humidity-system-based-in-MQTT-Protocol
-
 ![publish temp με leds ](https://github.com/user-attachments/assets/43060f08-caab-4818-852a-76481909f255)
 
 # Procedure for temperature and humidity measurements 
@@ -19,3 +18,6 @@ MQTTbox has two formats:
 * The nodejs App.
 
 MQTTBox is a tool for developers that makes monitoring the MQTT Server a breeze. We can subscribe(subscribe) and publish(publish) topics using MQTTBox, as well as create a virtual MQTT device for testing and debugging. The best part is that we can use the same server for multiple purposes to make the most of our development workflow.
+
+# PROJECT 
+As I mentioned above in this demo we will see a simulation on the MQTT communication protocol based on the online platform of mbed Simulator. More specifically, 2 mqtt functions will be implemented to implement the program, the first one will have to do with the publish function in which by integrating component,the temperature - humidity sensor sht31 we will send the values of the sensor to the MqttBox application, where and which will help us at all the run time of the program to see the temperature values , humidity and even some other information like qos(Quality of Service), retain(Publisher can tell the broker to keep the last message in this topic), cmd-command(shows us the type of operation being performed), dup-duplicate(indicates that the message is duplicate and was sent again because the intended recipient did not acknowledge the original message. ),topic(a filter used by the broker in MQTT message deliveries), messageld(shows us the id of the message), lenght(the length of the message) and raw payload(the raw payload) by the time frame we have specified. But in addition we have also declared 2 leds, a red one for temperature and a blue one for humidity which will turn on and off depending on the limit we have set.
