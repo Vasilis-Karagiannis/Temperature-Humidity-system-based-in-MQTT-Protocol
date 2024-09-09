@@ -1,0 +1,108 @@
+#define logMessage printf
+#define MQTTCLIENT_QOS2 1
+#include "Sht31.h"
+#include "mbed.h"
+#include "easy-connect.h"
+#include "MQTTNetwork.h"
+#include "MQTTmbed.h"
+#include "MQTTClient.h"
+
+
+int arrivedcount = 0;
+Sht31 sht31(I2C_SDA, I2C_SCL);
+DigitalOut led(p5);
+DigitalOut led1(p6);
+float temp;
+float humidity;
+
+int main (int argc, char* argv [])
+{
+    // MQTT broker hostname
+    const char* HOST = "broker.emqx.io";
+    // MQTT broker port
+    const int PORT = 1883;
+
+
+    // MQTT topics for temperature & humidity
+    const char* TEMPERATURE_TOPIC = "sht31/sensor/temperature";
+    const char* HUMIDITY_TOPIC = "sht31/sensor/humidity";
+
+logMessage ("Hello MqttServer");
+
+    NetworkInterface* network = easy_connect(true);
+
+
+while (1) {
+
+     float temp_sensor_value = sht31.readTemperature();
+     float hum_sensor_value = sht31.readHumidity();
+
+      if (! network) {
+        return -1;
+    }
+
+         MQTTNetwork mqttNetwork(network);
+
+MQTT: Client<MQTTNetwork, Countdown> client(mqttNetwork);
+
+logMessage ("Connecting to %s: %d\r\n", HOST, PORT);
+    int rc = mqttNetwork.connect(HOST, PORT);
+
+    if (rc! = 0)
+logMessage ("rc from TCP connect is %d\r\n", rc);
+
+    MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+data. MQTTVersion = 3;
+
+
+    // MQTT unique client id. Update this
+data. clientID.cstring = "temp";
+    // MQTT user credentials. Update this
+data. username. cstring = "vasilis1";
+data. password. cstring = "vasilis1";
+
+
+    if ((rc = client. connect(data))! = 0)
+logMessage ("rc from MQTT connect is %d\r\n", rc);
+
+MQTT: Messagemessage;
+
+    char buf [100];
+sprintf (buf, "%.1f", temp_sensor_value);
+
+    message.qos = MQTT: QOS0;
+message. retained = false;
+    message.dup = false;
+message. payload = (void*) buf;
+message. payloadlen = strlen(buf)+1;
+
+    rc = client. publish (TEMPERATURE_TOPIC, message);
+
+sprintf (buf, "%.1f", hum_sensor_value);
+MQTT: Message message1;
+    message1.qos = MQTT: QOS0;
+    message1.retained = false;
+    message1.dup = false;
+    message1.payload = (void*) buf;
+    message1.payloadlen = strlen(buf)+1;
+
+    rc = client. publish (HUMIDITY_TOPIC, message1);
+
+
+    if ((rc = client. unsubscribe (TEMPERATURE_TOPIC)! = 0)
+        logMessage ("rc from unsubscribe was %d\r\n", rc);
+
+    temp = sht31.readTemperature();
+        printf ("Temperature: %.2f C \n", temp);
+
+    humidity = sht31.readHumidity();
+        printf ("Humidity:  %.2f %% \n", humidity);
+
+        led = temp > 25.0f;
+        led1 = humidity > 40.0f;
+
+    wait_ms (500);
+
+    }
+    return 0;
+}
